@@ -12,14 +12,42 @@ const App = () => {
     "The only way to go fast, is to go well.",
   ];
 
+  const [votes, setVotes] = useState({
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+  });
   const [selected, setSelected] = useState(0);
-
+  const handleVotes = () => {
+    const newVote = {
+      ...votes,
+      [selected]: votes[selected] + 1,
+    };
+    setVotes(newVote);
+  };
+    let highestVote = Object.keys(votes).reduce((a, b) =>
+      votes[a] > votes[b] ? a : b
+    );
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>{anecdotes[selected]}</p>
-      <button onClick={() => setSelected(Math.floor(Math.random() * 8))}>
+      <p>has {votes[selected]} votes</p>
+      <button onClick={handleVotes}>Vote</button>
+      <button
+        onClick={() =>
+          setSelected(Math.floor(Math.random() * anecdotes.length))
+        }
+      >
         Next
       </button>
+      <h1>Anecdote with the most votes</h1>
+      <p>{anecdotes[highestVote]}</p>
     </div>
   );
 };
