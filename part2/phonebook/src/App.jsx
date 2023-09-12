@@ -1,6 +1,8 @@
 import { useState } from "react";
 import "./App.css";
 import People from "./Components/People";
+import Search from "./Components/Search";
+import AddNumber from "./Components/AddNumber";
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -36,7 +38,6 @@ const App = () => {
   }
   const handleSearch = (event) => {
     event.preventDefault()
-    console.log(event.target.value)
     setSearch(event.target.value.toLowerCase())
     
   }
@@ -44,32 +45,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <form>
-        <div>
-          Search: <input value={search} onChange={handleSearch} />
-        </div>
-      </form>
-      
-      <h2>Add number</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          Name: <input value={newName} onChange={handleNewPerson} />
-        </div>
-        <div>
-          Number: <input value={newNumber} onChange={handleNewNumber} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <Search search={search} onChange={handleSearch}/>
+      <AddNumber addPerson={addPerson} newName={newName} handleNewPerson={handleNewPerson} newNumber={newNumber} handleNewNumber={handleNewNumber} />
       <h2>Numbers</h2>
-      <ul>
-        {persons
-          .filter((person) => person.name.toLowerCase().match(search))
-          .map((x) => (
-            <People key={x.id} person={x.name} number={x.number} />
-          ))}
-      </ul>
+      <People persons={persons} search={search} />
     </div>
   );
 };
