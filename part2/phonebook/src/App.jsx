@@ -4,9 +4,10 @@ import People from "./Components/People";
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: "Arto Hellas", id: "Arto Hellas" },
+    { name: "Arto Hellas", id: "Arto Hellas", number: "09123123123" },
   ]);
   const [newName, setNewName] = useState("");
+  const [newNumber, setNewNumber] = useState("");
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -16,14 +17,19 @@ const App = () => {
     const personObject = {
       name: newName,
       id: newName,
+      number: newNumber,
     };
     setPersons(persons.concat(personObject));
     setNewName("");
+    setNewNumber("");
   };
 
   const handleNewPerson = (event) => {
     setNewName(event.target.value);
   };
+  const handleNewNumber = (event) => {
+    setNewNumber(event.target.value);
+  }
 
   return (
     <div>
@@ -32,6 +38,7 @@ const App = () => {
         <div>
           Name: <input value={newName} onChange={handleNewPerson} />
         </div>
+        <div>Number: <input value={newNumber} onChange={handleNewNumber} /></div>
         <div>
           <button type="submit">add</button>
         </div>
@@ -39,7 +46,7 @@ const App = () => {
       <h2>Numbers</h2>
       <ul>
         {persons.map((x) => (
-          <People key={x.id} person={x.name} />
+          <People key={x.id} person={x.name} number={x.number}/>
         ))}
       </ul>
     </div>
