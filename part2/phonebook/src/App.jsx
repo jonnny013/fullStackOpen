@@ -4,6 +4,7 @@ import People from "./Components/People";
 import Search from "./Components/Search";
 import AddNumber from "./Components/AddNumber";
 import axios from 'axios'
+import personService from './services/persons'
 
 
 const App = () => {
@@ -13,7 +14,7 @@ const App = () => {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons').then(response => setPersons(response.data))
+    personService.getAll().then(initialPerson => setPersons(initialPerson))
   }, [] )
 
   const addPerson = (event) => {
@@ -23,12 +24,15 @@ const App = () => {
     }
     const personObject = {
       name: newName,
-      id: newName,
       number: newNumber,
     };
-    setPersons(persons.concat(personObject));
-    setNewName("");
+    personService
+    .create(personObject)
+    .then(returnedPerson => {
+      setPersons(persons.concat(returnedPerson))
+      setNewName("");
     setNewNumber("");
+    })
   };
 
   const handleNewPerson = (event) => {
