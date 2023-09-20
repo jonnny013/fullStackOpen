@@ -44,7 +44,16 @@ const App = () => {
   const handleSearch = (event) => {
     event.preventDefault()
     setSearch(event.target.value.toLowerCase())
-    
+  }
+
+  const handleDelete = (id) => {
+    const personToDelete = persons.find(p => p.id === id)
+    console.log(personToDelete)
+    personService
+    .deletedPerson(personToDelete)
+    .then(response => {
+      setPersons(persons.map(p => p.id !== id ? p : response))
+    })
   }
 
   return (
@@ -53,7 +62,7 @@ const App = () => {
       <Search search={search} onChange={handleSearch}/>
       <AddNumber addPerson={addPerson} newName={newName} handleNewPerson={handleNewPerson} newNumber={newNumber} handleNewNumber={handleNewNumber} />
       <h2>Numbers</h2>
-      <People persons={persons} search={search} />
+      <People persons={persons} search={search} handleDelete={() => handleDelete(persons.id)} />
     </div>
   );
 };
