@@ -27,6 +27,8 @@ const App = () => {
         personService.update(updatedPerson.id, changedNumber)
         .then(returnPerson => {
           setPersons(persons.map(person => person.id !== updatedPerson.id ? person : returnPerson))
+          setNewName("");
+          setNewNumber("");
         })
       }
     }
@@ -62,11 +64,6 @@ const App = () => {
       {personService.deletedPerson(id).then((response) => {
         console.log(response);
         setPersons(persons.filter((p) => p.id !== id))
-        .catch((error) => {
-          alert(
-            `The person was already deleted from the server`
-          );
-        });
       });}
   }
 
