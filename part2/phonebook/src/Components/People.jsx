@@ -9,7 +9,7 @@ const People = (props) => {
           .map((x) => (
             <li key={x.id}>
               {x.name} {x.number}
-              <button onClick={props.handleDelete}>Delete</button>
+              <button onClick={() => props.handleDelete(x.id)}>Delete</button>
             </li>
           ))}
       </ul>

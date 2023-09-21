@@ -47,13 +47,18 @@ const App = () => {
   }
 
   const handleDelete = (id) => {
-    const personToDelete = persons.find(p => p.id === id)
-    console.log(personToDelete)
-    personService
-    .deletedPerson(personToDelete)
-    .then(response => {
-      setPersons(persons.map(p => p.id !== id ? p : response))
-    })
+    const currentPerson = persons.find(p => p.id === id)
+    
+    if (confirm(`Are you sure you want to delete ${currentPerson.name}?`))
+      {personService.deletedPerson(id).then((response) => {
+        console.log(response);
+        setPersons(persons.filter((p) => p.id !== id))
+        .catch((error) => {
+          alert(
+            `The person was already deleted from the server`
+          );
+        });
+      });}
   }
 
   return (
@@ -62,7 +67,7 @@ const App = () => {
       <Search search={search} onChange={handleSearch}/>
       <AddNumber addPerson={addPerson} newName={newName} handleNewPerson={handleNewPerson} newNumber={newNumber} handleNewNumber={handleNewNumber} />
       <h2>Numbers</h2>
-      <People persons={persons} search={search} handleDelete={() => handleDelete(persons.id)} />
+      <People persons={persons} search={search} handleDelete={handleDelete} />
     </div>
   );
 };
