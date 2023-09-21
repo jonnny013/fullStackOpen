@@ -5,6 +5,7 @@ import Search from "./Components/Search";
 import AddNumber from "./Components/AddNumber";
 import axios from 'axios'
 import personService from './services/persons'
+import Notification from "./Components/Notification";
 
 
 const App = () => {
@@ -12,6 +13,8 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [search, setSearch] = useState('')
+  const [notification, setNotification] = useState(null)
+  const [notificationCode, setNotificationCode] = useState(0)
 
   useEffect(() => {
     personService.getAll().then(initialPerson => setPersons(initialPerson))
@@ -27,8 +30,24 @@ const App = () => {
         personService.update(updatedPerson.id, changedNumber)
         .then(returnPerson => {
           setPersons(persons.map(person => person.id !== updatedPerson.id ? person : returnPerson))
+          .catch(error => {
+            setNotificationCode(2);
+            setNotification(`${updatedPerson.name} has already been deleted`);
+            setTimeout(() => {
+              setNotification(null);
+              setNotificationCode(0);
+            }, 5000);
+            setPersons(persons.filter(p => p.id !== updatedPerson.id))
+          })
           setNewName("");
           setNewNumber("");
+          setNotificationCode(1)
+          setNotification(`Updated ${updatedPerson.name}'s number`);
+          setTimeout(() => {
+            setNotification(null)
+            setNotificationCode(0)
+          }, 5000)
+          
         })
       }
     }
@@ -43,6 +62,12 @@ const App = () => {
       setPersons(persons.concat(returnedPerson))
       setNewName("");
     setNewNumber("");
+    setNotificationCode(1);
+    setNotification(`Added ${personObject.name} to your phonebook`);
+    setTimeout(() => {
+      setNotification(null);
+      setNotificationCode(0);
+    }, 5000);
     })}
   };
 
@@ -62,16 +87,34 @@ const App = () => {
     
     if (confirm(`Are you sure you want to delete ${currentPerson.name}?`))
       {personService.deletedPerson(id).then((response) => {
-        console.log(response);
         setPersons(persons.filter((p) => p.id !== id))
+        setNotificationCode(2);
+        setNotification(` ${currentPerson.name} has been deleted`);
+        setTimeout(() => {
+          setNotification(null);
+          setNotificationCode(0);
+        }, 5000);
       });}
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Search search={search} onChange={handleSearch}/>
-      <AddNumber addPerson={addPerson} newName={newName} handleNewPerson={handleNewPerson} newNumber={newNumber} handleNewNumber={handleNewNumber} />
+      {notificationCode === 1 && (
+        <Notification message={notification} styling="style1" />
+      )}
+      {notificationCode === 2 && (
+        <Notification message={notification} styling="style2" />
+      )}
+
+      <Search search={search} onChange={handleSearch} />
+      <AddNumber
+        addPerson={addPerson}
+        newName={newName}
+        handleNewPerson={handleNewPerson}
+        newNumber={newNumber}
+        handleNewNumber={handleNewNumber}
+      />
       <h2>Numbers</h2>
       <People persons={persons} search={search} handleDelete={handleDelete} />
     </div>
