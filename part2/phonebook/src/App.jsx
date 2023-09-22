@@ -27,28 +27,33 @@ const App = () => {
         const updatedPerson = persons.find(p => p.name === newName)
         const changedNumber = {...updatedPerson, number: newNumber}
 
-        personService.update(updatedPerson.id, changedNumber)
-        .then(returnPerson => {
-          setPersons(persons.map(person => person.id !== updatedPerson.id ? person : returnPerson))
-          .catch(error => {
+        personService
+          .update(updatedPerson.id, changedNumber)
+          .then((returnPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== updatedPerson.id ? person : returnPerson
+              )
+            );
+            setNewName("");
+            setNewNumber("");
+            setNotificationCode(1);
+            setNotification(`Updated ${updatedPerson.name}'s number`);
+            setTimeout(() => {
+              setNotification(null);
+              setNotificationCode(0);
+            }, 5000);
+          })
+          .catch((error) => {
+            console.log(error)
             setNotificationCode(2);
             setNotification(`${updatedPerson.name} has already been deleted`);
             setTimeout(() => {
               setNotification(null);
               setNotificationCode(0);
-            }, 5000);
-            setPersons(persons.filter(p => p.id !== updatedPerson.id))
-          })
-          setNewName("");
-          setNewNumber("");
-          setNotificationCode(1)
-          setNotification(`Updated ${updatedPerson.name}'s number`);
-          setTimeout(() => {
-            setNotification(null)
-            setNotificationCode(0)
-          }, 5000)
-          
-        })
+            }, 5000);  
+            setPersons(persons.filter(person => person.id !== updatedPerson.id))
+          });
       }
     }
     else 
@@ -86,15 +91,29 @@ const App = () => {
     const currentPerson = persons.find(p => p.id === id)
     
     if (confirm(`Are you sure you want to delete ${currentPerson.name}?`))
-      {personService.deletedPerson(id).then((response) => {
-        setPersons(persons.filter((p) => p.id !== id))
-        setNotificationCode(2);
-        setNotification(` ${currentPerson.name} has been deleted`);
-        setTimeout(() => {
-          setNotification(null);
-          setNotificationCode(0);
-        }, 5000);
-      });}
+      {personService
+        .deletedPerson(id)
+        .then((response) => {
+          setPersons(persons.filter((p) => p.id !== id));
+          setNotificationCode(2);
+          setNotification(` ${currentPerson.name} has been deleted`);
+          setTimeout(() => {
+            setNotification(null);
+            setNotificationCode(0);
+          }, 5000);
+        })
+        .catch((error) => {
+          setNotificationCode(2);
+          setNotification(`${currentPerson.name} has already been deleted`);
+          setTimeout(() => {
+            setNotification(null);
+            setNotificationCode(0);
+          }, 5000);
+          setPersons(
+            persons.filter((person) => person.id !== currentPerson.id)
+          );
+        });
+      ;}
   }
 
   return (

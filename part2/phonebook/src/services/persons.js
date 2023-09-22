@@ -18,7 +18,7 @@ const deletedPerson =(id) => {
 
 const update = (id, newObject) => {
     const request = axios.put(`${baseUrl}/${id}`, newObject)
-    return request.then(response => response.data).catch(error => {console.log('fail')})
+    return request.then(response => response.data)
 }
 
 export default {
