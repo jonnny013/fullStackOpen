@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Results = ({country, search}) => {
+const Results = ({country, search, handleClick, show}) => {
 
     const results = country.filter(c => c.name.common.toLowerCase().match(search))
   return (
@@ -12,7 +12,11 @@ const Results = ({country, search}) => {
             <p>Capital: {a.capital}</p>
             <p>Area: {a.area}</p>
             <h3>Languages:</h3>
-            <ul>{Object.entries(a.languages).map(([key, value]) => <li key={key}>{value}</li>)}</ul> 
+            <ul>
+              {Object.entries(a.languages).map(([key, value]) => (
+                <li key={key}>{value}</li>
+              ))}
+            </ul>
             <img src={a.flags.png} />
           </div>
         ))}
@@ -22,7 +26,11 @@ const Results = ({country, search}) => {
       {results.length < 10 &&
         results.length > 1 &&
         results.map((a) => (
-          <li key={a.name.common.replace(" ", "-")}>{a.name.common}</li>
+          <div key={a.name.common.replace(" ", "-")}>
+            <p>{a.name.common}</p>
+            <button onClick={handleClick}>Show</button>
+            {show && <p>hello</p>}
+          </div>
         ))}
     </div>
   );
