@@ -6,10 +6,10 @@ import Notification from "./Components/Notification";
 import Footer from "./Components/Footer";
 
 const App = () => {
-  const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState(null);
   const [newNote, setNewNote] = useState("a new note...");
   const [showAll, setShowAll] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('some error happened')
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     noteService
@@ -18,6 +18,10 @@ const App = () => {
       setNotes(initialNotes)
     });
   }, []);
+
+  if (!notes) {
+    return null
+  }
 
   const addNote = (event) => {
     event.preventDefault();
@@ -63,7 +67,9 @@ const App = () => {
   return (
     <div>
       <h1>Notes</h1>
-      <Notification message={errorMessage} />
+      {errorMessage !== null && (
+        <Notification message={errorMessage}  />
+      )}
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? "important" : "all"}
@@ -71,7 +77,9 @@ const App = () => {
       </div>
       <ul>
         {notesToShow.map((note) => (
-          <Note key={note.id} note={note} 
+          <Note
+            key={note.id}
+            note={note}
             toggleImportance={() => toggleImportanceOf(note.id)}
           />
         ))}
