@@ -1,11 +1,21 @@
-import React from 'react'
+import React from "react";
 
-const Results = ({ country, search, handleClick, place, setPlace, weather }) => {
+const Results = ({
+  country,
+  search,
+  handleClick,
+  place,
+  setPlace,
+  weather,
+  weatherIsAvailable,
+  apiIsLoading,
+}) => {
   const results = country.filter((c) =>
     c.name.common.toLowerCase().match(search)
   );
   return (
     <div>
+      {apiIsLoading && <p>Loading, please wait...</p>}
       {results.length === 1 &&
         results.map((a) => (
           <div key={a.name.common.replace(" ", "-")}>
@@ -19,15 +29,24 @@ const Results = ({ country, search, handleClick, place, setPlace, weather }) => 
                 <li key={key}>{value}</li>
               ))}
             </ul>
-            <img src={a.flags.png} />
-            {weather ?
-            <div>
-            <h2>Weather in {a.capital}</h2>
-            <p>Current temperature: {(weather.main.temp - 273.15).toFixed(1)} ºC</p>
-            <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} />
-            <p>Wind: {weather.wind.speed} m/s</p> </div>
-          : <p>Loading...</p>
-          }
+            <img src={a.flags.png} style={{ border: "1px solid black" }} />
+            {weather ? (
+              <div>
+                <h2>Weather in {a.capital}</h2>
+                <p>
+                  Current temperature: {(weather.main.temp - 273.15).toFixed(1)}{" "}
+                  ºC
+                </p>
+                <img
+                  src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
+                />
+                <p>Wind: {weather.wind.speed} m/s</p>{" "}
+              </div>
+            ) : !weatherIsAvailable ? (
+              <p>Weather is not currently available</p>
+            ) : (
+              <p>Loading...</p>
+            )}
           </div>
         ))}
       {results.length >= 10 && (
@@ -41,9 +60,8 @@ const Results = ({ country, search, handleClick, place, setPlace, weather }) => 
             <button onClick={() => handleClick(a)}>Show</button>
           </div>
         ))}
-      
     </div>
   );
 };
 
-export default Results
+export default Results;
