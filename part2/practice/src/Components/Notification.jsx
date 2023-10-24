@@ -1,6 +1,8 @@
-import React from 'react'
-
-const Notification = ({message}) => {
+// eslint-disable-next-line react/prop-types
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
   return (
     <div className='error'>
         {message}

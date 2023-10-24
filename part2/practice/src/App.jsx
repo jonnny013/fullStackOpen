@@ -1,15 +1,20 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import Note from "./Components/Note";
 import noteService from './services/notes'
 import Notification from "./Components/Notification";
 import Footer from "./Components/Footer";
+import loginService from './services/login'
 
 const App = () => {
-  const [notes, setNotes] = useState(null);
-  const [newNote, setNewNote] = useState("a new note...");
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState("");
   const [showAll, setShowAll] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
+
+  
 
   useEffect(() => {
     noteService
@@ -19,9 +24,15 @@ const App = () => {
     });
   }, []);
 
-  if (!notes) {
-    return null
-  }
+ 
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      noteService.setToken(user.token)
+    }
+  }, [])
 
   const addNote = (event) => {
     event.preventDefault();
@@ -46,7 +57,7 @@ const App = () => {
       .then((returnedNote) => {
         setNotes(notes.map((n) => (n.id !== id ? n : returnedNote)));
       })
-      .catch((error) => {
+      .catch(() => {
         setErrorMessage(
           `Note '${note.content}' was already removed from the server`
         )
@@ -64,12 +75,62 @@ const App = () => {
     ? notes
     : notes.filter((note) => note.important === true);
 
+    const handleLogin = async (event) => {
+      event.preventDefault()
+      try {
+        const user = await loginService.login({
+          username, password,
+        })
+        window.localStorage.setItem(
+          'loggedNoteappUser', JSON.stringify(user)
+        )
+        noteService.setToken(user.token)
+        setUser(user)
+        setUsername('')
+        setPassword('')
+      } catch (exception) {
+        setErrorMessage('Wrong credentials')
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      }
+    }
+
+    const loginForm = () => (
+              <form onSubmit={handleLogin}>
+          <div>
+            Username: 
+              <input type="text" value={username} name="Username" onChange={({ target }) => setUsername(target.value)} />
+          </div>
+          <div>
+            Password:
+              <input type="password" value={password} name="Password" onChange={({ target }) => setPassword(target.value)} />
+          </div>
+          <button type="submit">Login</button>
+        </form>
+    )
+
+    const noteForm = () => (
+            <form onSubmit={addNote}>
+        <input value={newNote} onChange={handleNoteChange} placeholder="Write a note here" />
+        <button type="submit">save</button>
+      </form>
+    )
+
   return (
     <div>
       <h1>Notes</h1>
-      {errorMessage !== null && (
+      
         <Notification message={errorMessage}  />
-      )}
+
+        {!user && loginForm()}
+        {user && 
+          <div>
+            <p>{user.name} is logged in</p>
+            {noteForm()}
+          </div>
+        }
+
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? "important" : "all"}
@@ -84,10 +145,6 @@ const App = () => {
           />
         ))}
       </ul>
-      <form onSubmit={addNote}>
-        <input value={newNote} onChange={handleNoteChange} />
-        <button type="submit">save</button>
-      </form>
       <Footer />
     </div>
   );
