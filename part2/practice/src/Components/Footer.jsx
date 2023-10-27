@@ -6,12 +6,12 @@ const Footer = () => {
     }
 
 
-  return (
-    <div style={footerStyle}>
-        <br />
-        <em>Note app, Jon Love: Department of Computer Science, University of Helsinki 2023</em>
-    </div>
-  )
+    return (
+        <div style={footerStyle}>
+            <br />
+            <em>Note app, Jon Love: Department of Computer Science, University of Helsinki 2023</em>
+        </div>
+    )
 }
 
 export default Footer
